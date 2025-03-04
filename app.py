@@ -22,17 +22,17 @@ st.title("🔢 APS - Gerador de Milhares e Centenas 🎯")
 # Inputs do Usuário
 st.subheader("📝 Insira os dados para gerar suas milhares e centenas")
 
-# Entrada para pedras de milhar
-milhar1 = st.text_input("Digite a primeira pedra de milhar", max_chars=1)
-milhar2 = st.text_input("Digite a segunda pedra de milhar", max_chars=1)
+# Entrada para pedras de milhar (opcional)
+milhar1 = st.text_input("Digite a primeira pedra de milhar (opcional)", max_chars=1)
+milhar2 = st.text_input("Digite a segunda pedra de milhar (opcional)", max_chars=1)
 
-# Entrada para pedras de centena
-centena1 = st.text_input("Digite a primeira pedra de centena", max_chars=1)
-centena2 = st.text_input("Digite a segunda pedra de centena", max_chars=1)
-centena3 = st.text_input("Digite a terceira pedra de centena", max_chars=1)
-centena4 = st.text_input("Digite a quarta pedra de centena", max_chars=1)
+# Entrada para pedras de centena (opcional)
+centena1 = st.text_input("Digite a primeira pedra de centena (opcional)", max_chars=1)
+centena2 = st.text_input("Digite a segunda pedra de centena (opcional)", max_chars=1)
+centena3 = st.text_input("Digite a terceira pedra de centena (opcional)", max_chars=1)
+centena4 = st.text_input("Digite a quarta pedra de centena (opcional)", max_chars=1)
 
-# Entrada para bichos
+# Entrada para bichos (obrigatório)
 bichos_escolhidos = st.text_area("Digite até 5 bichos (separados por vírgula)", placeholder="Exemplo: Cavalo, Galo, Leão")
 
 # Dicionário dos bichos e dezenas
@@ -50,20 +50,25 @@ bichos_dict = {
 
 # Função para gerar milhares e centenas
 def gerar_milhares_centenas():
-    if not milhar1 or not milhar2 or not centena1 or not centena2 or not centena3 or not centena4 or not bichos_escolhidos:
-        st.warning("⚠️ Preencha todos os campos para gerar milhares e centenas!")
+    if not bichos_escolhidos.strip():
+        st.warning("⚠️ Você precisa escolher pelo menos um bicho para gerar os números!")
         return [], []
 
-    pedras_milhar = [milhar1, milhar2]
-    pedras_centena = [centena1, centena2, centena3, centena4]
+    # Pegando apenas as pedras preenchidas
+    pedras_milhar = [p for p in [milhar1, milhar2] if p]  # Remove valores vazios
+    pedras_centena = [p for p in [centena1, centena2, centena3, centena4] if p]  # Remove valores vazios
+
+    if not pedras_milhar and not pedras_centena:
+        st.warning("⚠️ Você precisa preencher pelo menos uma pedra de milhar ou uma pedra de centena!")
+        return [], []
 
     bichos = [b.strip().title() for b in bichos_escolhidos.split(",") if b.strip().title() in bichos_dict]
 
     milhares = []
     centenas = set()
 
-    for milhar in pedras_milhar:
-        for centena in pedras_centena:
+    for milhar in pedras_milhar or [""]:  # Se não preencher milhar, considera vazio
+        for centena in pedras_centena or [""]:  # Se não preencher centena, considera vazio
             for bicho in bichos:
                 for dezena in bichos_dict[bicho]:
                     milhar_completa = f"{milhar}{centena}{str(dezena).zfill(2)}"
